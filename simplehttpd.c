@@ -5,6 +5,7 @@
  * Sistemas Operativos 2014/2015
  */
 
+#include "semlib.h"
 #include <stdio.h>
 #include <sys/types.h> 
 #include <sys/socket.h>
@@ -47,12 +48,36 @@ char req_buf[SIZE_BUF];
 char buf_tmp[SIZE_BUF];
 int port,socket_conn,new_conn;
 
+//processos
+pid_t pid_statistics, pid_receiver;
+
 
 int main(int argc, char ** argv)
 {
 	struct sockaddr_in client_name;
 	socklen_t client_name_len = sizeof(client_name);
 	int port;
+
+	pid_statistics = fork();
+	if(pid_statistics == 0)
+	{
+		pid_statistics = getpid();
+		//Funçoes realizadas pelo processo statistics
+		exit(0);
+	}
+	else if(pid_statistics == -1)
+	{
+		printf("Error creating the statistics process.Exiting...\n");
+		exit(0);
+	}
+
+
+	//processo pai requests
+	pid_receiver = getpid();
+	//buffer
+
+
+
 
 	signal(SIGINT,catch_ctrlc);
 
@@ -94,6 +119,8 @@ int main(int argc, char ** argv)
 		close(new_conn);
 
 	}
+	//processo pai request espero pelo filho
+	wait(NULL);
 
 }
 
